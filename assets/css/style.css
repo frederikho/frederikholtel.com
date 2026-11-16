@@ -375,12 +375,117 @@ p {
   margin: 0;
 }
 
+/* ---------- Blog ---------- */
+
+.post-link {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.post-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.post-meta {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.post-meta a {
+  color: inherit;
+}
+
+.post h1 {
+  font-size: 1.9rem;
+  margin-bottom: 2rem;
+}
+
+.post figure {
+  margin: 0 0 2rem;
+}
+
+.post figure img {
+  margin: 0 auto;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.post figcaption {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 0.6rem;
+}
+
+.options {
+  padding-left: 1.4rem;
+  margin: 0 0 1.5rem;
+}
+
+.options > li {
+  margin-bottom: 1.25rem;
+}
+
+.options > li::marker {
+  font-family: var(--serif);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.options h3 {
+  margin-bottom: 0.2rem;
+}
+
+.options p {
+  margin-bottom: 0.4rem;
+}
+
+.proscons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.95rem;
+}
+
+.proscons li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.proscons li::before {
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+}
+
+.proscons .pro::before {
+  content: "+";
+  color: var(--accent);
+}
+
+.proscons .con::before {
+  content: "−";
+  color: #b4533c;
+}
+
 /* ---------- Footer ---------- */
 
 .site-footer {
   border-top: 1px solid var(--rule);
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+.site-footer a {
+  color: inherit;
+}
+
+.site-footer a:hover {
+  color: var(--accent);
 }
 
 .site-footer .wrap {
