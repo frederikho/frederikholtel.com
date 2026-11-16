@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Personal academic website of Frederik Holtel: **plain HTML + CSS, no framework, no build step.** The only JavaScript is `assets/js/email.js` (email spam protection). (It was briefly an al-folio/Jekyll site; that was deliberately thrown away. Don't reintroduce a static site generator or theme without being asked.)
+Personal academic website of Frederik Holtel: **plain HTML + CSS, no framework, no build step.** The only JavaScript: `assets/js/email.js` (email spam protection) and the GoatCounter analytics script on every page. (It was briefly an al-folio/Jekyll site; that was deliberately thrown away. Don't reintroduce a static site generator or theme without being asked.)
 
 **Git rule: never run `git add`, `git commit` or `git push` (or anything else that stages, commits or pushes) on your own. The user does that themselves.** Edit files and tell the user what changed; leave version control to them. Also don't create remote repos or publish anything without an explicit go.
 
@@ -13,6 +13,7 @@ publications/index.html  Publications
 cv/index.html            CV (HTML only)
 blog/index.html          Blog list (newest first; one <li> per post)
 blog/<slug>/index.html   One folder per post; images in assets/img/blog/
+datenschutz/index.html   Datenschutzerklärung (German privacy policy: GitHub Pages hosting, GoatCounter), linked from every footer
 impressum/index.html     Impressum (German legal notice, § 5 DDG), linked from every footer — STILL MISSING the postal address (§ 5 DDG requires one); user will add it
 404.html                 Not-found page (GitHub Pages serves it automatically)
 assets/css/style.css     The only stylesheet (design tokens in :root, dark mode via prefers-color-scheme)
@@ -31,7 +32,7 @@ Header, nav and footer are duplicated in every page. When changing them, change 
 - Never write the email address in plain text in HTML: use `<a class="js-email" href="#" data-u="letloh.kirederf" data-d="ed.utpr">frederik.holtel [at] rptu.de</a>` and include `<script src="/assets/js/email.js" defer></script>` on that page.
 - Publications: only the *Journalism Practice* paper for now. No search/filter box.
 - No separate teaching page; teaching is listed in the CV only. The CV has no "work in progress" section (that lives on the research page).
-- No external fonts or third-party embeds (GDPR); system font stacks only.
+- No external fonts or third-party embeds (GDPR); system font stacks only. The only exception is the GoatCounter analytics script (cookieless, no consent banner needed). Every page ends with `<script data-goatcounter="https://frederikholtel.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>` before `</body>`; add it to new pages. Dashboard: https://frederikholtel.goatcounter.com/. If tracking changes, update `datenschutz/index.html`.
 - Strip EXIF/GPS metadata from any photo before adding it.
 
 ## Local preview
