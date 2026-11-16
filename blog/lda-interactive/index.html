@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Linear Discriminant Analysis (LDA) can be so easy · Frederik Holtel</title>
+  <meta name="description" content="An interactive visualisation of linear discriminant analysis (LDA): add, drag and remove data points, change the population parameters and watch the decision boundary move.">
+  <link rel="canonical" href="https://towardsdatascience.com/linear-discriminant-analysis-lda-can-be-so-easy-b3f46e32f982/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Frederik Holtel">
+  <meta property="og:title" content="Linear Discriminant Analysis (LDA) can be so easy">
+  <meta property="og:description" content="An interactive visualisation of linear discriminant analysis (LDA): add, drag and remove data points, change the population parameters and watch the decision boundary move.">
+  <meta property="og:url" content="https://www.frederikholtel.com/blog/lda-interactive/">
+  <meta property="og:image" content="https://www.frederikholtel.com/assets/img/blog/lda-fig1.jpg">
+  <meta property="article:published_time" content="2023-02-20">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Linear Discriminant Analysis (LDA) Can Be So Easy",
+    "alternativeHeadline": "An Interactive Visualisation for You to Experiment With",
+    "description": "An interactive visualisation of linear discriminant analysis (LDA): add, drag and remove data points, change the population parameters and watch the decision boundary move.",
+    "image": "https://www.frederikholtel.com/assets/img/blog/lda-fig1.jpg",
+    "datePublished": "2023-02-20",
+    "inLanguage": "en",
+    "url": "https://www.frederikholtel.com/blog/lda-interactive/",
+    "isBasedOn": "https://towardsdatascience.com/linear-discriminant-analysis-lda-can-be-so-easy-b3f46e32f982/",
+    "author": { "@type": "Person", "name": "Frederik Holtel", "url": "https://www.frederikholtel.com/" }
+  }
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="/">Frederik Holtel</a>
+      <nav class="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="/">About</a></li>
+          <li><a href="/research/">Research</a></li>
+          <li><a href="/publications/">Publications</a></li>
+          <li><a href="/blog/" aria-current="page">Blog</a></li>
+          <li><a href="/cv/">CV</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <article class="wrap post">
+      <p class="post-meta"><a href="/blog/">Blog</a> · <time datetime="2023-02-20">20 February 2023</time> · Originally published in <a href="https://towardsdatascience.com/linear-discriminant-analysis-lda-can-be-so-easy-b3f46e32f982/">Towards Data Science</a></p>
+      <h1>Linear Discriminant Analysis (LDA) can be so easy</h1>
+      <p class="lede">An interactive visualisation for you to experiment with</p>
+
+      <p>Classification is a central topic in machine learning. However, it can be challenging to understand how the different algorithms work. In this article, we will make linear discriminant analysis come alive with an interactive plot that you can experiment with. Get ready to dive into the world of data classification!</p>
+
+      <p><strong>Interactive plot 👇</strong> Click to add and remove data points, use drag to move them. Change the population parameters and generate new data samples.</p>
+
+      <div class="lda-plot" id="lda">
+        <noscript>The interactive plot needs JavaScript. You can also open it on <a href="https://observablehq.com/@frederikho/interactive-lda-plot">Observable</a>.</noscript>
+      </div>
+
+      <p>If you are applying or studying classification methods, you might have come across various methods such as Naive Bayes, K-nearest neighbours (KNN), quadratic discriminant analysis (QDA) and linear discriminant analysis (LDA). However, it is not always intuitive to understand what the different algorithms are doing. LDA is one of the first approaches to learn and consider and this article demonstrates how the technique works.</p>
+
+      <p>Let’s start from the beginning. All classification methods are approaches to answer the question: Which type of class does this observation belong to?</p>
+
+      <p>In the plot above, there are two independent variables, <code>x_1</code> on the horizontal axis and <code>x_2</code> on the vertical axis. Think of the independent variables as scores in two subjects, e.g. physics and literature (ranging from 0–20). The dependent value <code>y</code> is the class, in the plot represented as red or blue. Think of it as a binary variable we want to predict, such as whether an applicant is admitted to university (“yes” or “no”). A set of given observations is displayed as circles. Each is characterised by a <code>x_1</code> and a <code>x_2</code> value and the class.</p>
+
+      <p>Now, if a new data point is added, to which class shall it be assigned?</p>
+
+      <p>LDA allows us to draw a boundary to divide the space in two parts (or multiple ones, but two in this case with two classes). For example, below in figure 1 I marked a new data point at <code>(x_1 = 4, x_2 = 14)</code> with a cross. As it falls on the “red side” of the space, this observation would be assigned to the red class.</p>
+
+      <figure>
+        <img src="/assets/img/blog/lda-fig1.jpg" width="800" height="671" loading="lazy" alt="Scatter plot with about a dozen red points on the left and many blue points on the right, separated by a steep straight boundary line. A cross at x_1 = 4, x_2 = 14 lies on the red side of the line.">
+        <figcaption>Figure 1: The new observation at the cross (x_1 = 4, x_2 = 14) is assigned to the red class.</figcaption>
+      </figure>
+
+      <h2>How it works: the math behind it</h2>
+
+      <p>So given the LDA boundary, we can make classifications. But how can we draw the boundary line using the LDA algorithm?</p>
+
+      <p>The line divides the plot where the probability of the red class and the blue class is 50% each. Going to one side, the probability of red is higher, going to the opposite side, blue is more probable. We need to come up with a way to calculate how probable it is for the new observation to belong to each of the classes.</p>
+
+      <p>The probability that the new observation belongs to the red class can be written this way: <code>P(Y = red | X = (x_1 = 4, x_2 = 14))</code>. To make it easier to read, instead of <code>x_1 = 4, x_2 = 14</code>, I will in the following just write <code>x</code> which is a vector containing the two values.</p>
+
+      <p>According to the Bayes theorem, we can express conditional probabilities as <code>P(Y = red | X = x) = P(Y = red) * P(X = x | Y = red) / P(X = x)</code>. So to calculate the probability that the new observation is “red” given its x values, we need to know three other probabilities.</p>
+
+      <p>Let’s go step by step. <code>P(Y = red)</code> and <code>P(X = x)</code> are called “prior probabilities”. In the plot, <code>P(Y = red)</code> can be calculated simply by taking the share of all “red” observations of the total number of observations (27.27% in figure 1).</p>
+
+      <p>Calculating the prior probability of x, <code>P(X = x)</code>, is more difficult. We don’t have any observation with <code>x_1 = 4</code> and <code>x_2 = 14</code> in the initial dataset, so what is its probability? Zero? Not quite.</p>
+
+      <p><code>P(X = x)</code> can be understood as the sum of the joint probabilities <code>P(Y = red, X = x)</code> and <code>P(Y = blue, X = x)</code> (see also <a href="https://en.wikipedia.org/wiki/Law_of_total_probability">the law of total probability</a>):</p>
+
+      <p class="math"><i>P</i>(<i>X</i> = <i>x</i>) = <i>P</i>(<i>Y</i> = <i>red</i>, <i>X</i> = <i>x</i>) + <i>P</i>(<i>Y</i> = <i>blue</i>, <i>X</i> = <i>x</i>)</p>
+
+      <p>Each of the joint probabilities can be expressed with the Bayes theorem as:</p>
+
+      <p class="math"><i>P</i>(<i>Y</i> = <i>red</i>, <i>X</i> = <i>x</i>) = <i>P</i>(<i>X</i> = <i>x</i> | <i>Y</i> = <i>red</i>) · <i>P</i>(<i>red</i>)<br><i>P</i>(<i>Y</i> = <i>blue</i>, <i>X</i> = <i>x</i>) = <i>P</i>(<i>X</i> = <i>x</i> | <i>Y</i> = <i>blue</i>) · <i>P</i>(<i>blue</i>)</p>
+
+      <p>You see the priors <code>P(red)</code> and <code>P(blue)</code> enter again, which we already know how to determine. What is left for us to do, is to find a way to calculate the conditional probabilities <code>P(X = x | Y = red)</code> and <code>P(X = x | Y = blue)</code>.</p>
+
+      <p>Even if we did never see any red data point at position <code>x</code> in the plot in our original data set, we can find a probability if we regard <code>x</code> to be drawn from a population of a certain form. Usually when using real world data, the population is not directly observable, so we don’t know the true form of the population distribution. What LDA does is to assume that the <code>x</code> values are normally distributed on the <code>x_1</code> and <code>x_2</code> axis. With real world data, this assumption can be more or less reasonable. As we are dealing with a generated data set here though, we don’t have to worry about this problem. The data originate from populations which follow a normal (i.e. Gaussian) distribution, characterised by two parameters (per independent variable): <code>~N(mean, variance)</code>.</p>
+
+      <p>Using the formula for multivariate normal distributions, we can describe the distribution of the data belonging to class “red” as</p>
+
+      <p class="math"><i>P</i>(<i>X</i> = <i>x</i> | <i>Y</i> = <i>red</i>) = 1 / ((2π) |Σ|<sup>1/2</sup>) · exp(−½ (<i>x</i> − <i>μ</i><sub><i>red</i></sub>)<sup><i>T</i></sup> Σ<sup>−1</sup> (<i>x</i> − <i>μ</i><sub><i>red</i></sub>))</p>
+
+      <p>where Σ denotes a covariance matrix. LDA uses only one common covariance matrix for all classes, meaning that it assumes that all classes have the same <code>variance(x_1)</code>, <code>variance(x_2)</code> and <code>covariance(x_1, x_2)</code>.</p>
+
+      <p>Now that we’ve got the formula for <code>P(X = x | Y = red)</code>, we can plug this in the equation above to get to <code>P(Y = red | X = x)</code>. This gives us a monstrous equation, which I’ll skip here. Luckily, it gets simpler from here. Our goal now is to find the dividing line that separates the red and blue zones, i.e. we want to find those points where the probabilities of being class red or blue are equal:</p>
+
+      <p class="math"><i>P</i>(<i>Y</i> = <i>red</i> | <i>X</i> = <i>x</i>) = <i>P</i>(<i>Y</i> = <i>blue</i> | <i>X</i> = <i>x</i>)</p>
+
+      <p>Performing some transformations, it can be shown that minimising this is equivalent to minimising the following equation:</p>
+
+      <p class="math"><i>x</i><sup><i>T</i></sup> Σ<sup>−1</sup> <i>μ</i><sub><i>red</i></sub> − ½ <i>μ</i><sub><i>red</i></sub><sup><i>T</i></sup> Σ<sup>−1</sup> <i>μ</i><sub><i>red</i></sub> + log(<i>P</i>(<i>red</i>)) = <i>x</i><sup><i>T</i></sup> Σ<sup>−1</sup> <i>μ</i><sub><i>blue</i></sub> − ½ <i>μ</i><sub><i>blue</i></sub><sup><i>T</i></sup> Σ<sup>−1</sup> <i>μ</i><sub><i>blue</i></sub> + log(<i>P</i>(<i>blue</i>))</p>
+
+      <p>Solving this for <code>x_2</code>, we get a line like</p>
+
+      <p class="math"><i>x</i><sub>2</sub> = <i>β</i><sub>0</sub> + <i>β</i><sub>1</sub> · <i>x</i><sub>1</sub></p>
+
+      <p>where <code>β_0</code> and <code>β_1</code> are the parameters depending on the means μ_red and μ_blue, the common covariance matrix Σ and the prior probabilities of red and blue, P(“red”) and P(“blue”).</p>
+
+      <hr>
+
+      <h2>Exploring the plot</h2>
+
+      <p>Now that you know how it works, you can explore the plot using different parameters.</p>
+
+      <p>When you click “Generate new samples”, the plot displays two boundaries. The Bayes boundary is calculated using the “real” population parameters. The estimated boundary in contrast makes estimates for the parameters based on the sample data.</p>
+
+      <p>Some guiding questions for exploration:</p>
+
+      <ul>
+        <li>Using which parameters does the estimated boundary deviate strongly from the Bayes boundary? (see figure 2, left image)</li>
+        <li>How sensitive is the boundary to outliers? (see figure 2, center image)</li>
+        <li>Which parameters give results you did not expect?</li>
+      </ul>
+
+      <figure class="fig-row">
+        <img src="/assets/img/blog/lda-fig2-left.jpg" width="800" height="772" loading="lazy" alt="Plot with a single red point and the dashed Bayes boundary running diagonally far away from it; the estimated boundary is missing.">
+        <img src="/assets/img/blog/lda-fig2-center.jpg" width="800" height="764" loading="lazy" alt="Plot with five blue points top left and a red cluster on the right, one red outlier further left. Shaded bands show the estimated means and variances; the estimated boundary is a steep diagonal line.">
+        <img src="/assets/img/blog/lda-fig2-right.jpg" width="800" height="771" loading="lazy" alt="Plot with a cluster of red points and a single blue point being dragged above them; the estimated boundary is a nearly horizontal line between the blue point and the red cluster.">
+        <figcaption>Figure 2. Left: The estimated boundary deviates strongly from the Bayes boundary. Center: The boundary adapts to an outlier. Right: The boundary adapts well to the data point moving around.</figcaption>
+      </figure>
+
+      <hr>
+
+      <h2>Final remarks</h2>
+
+      <p>LDA is an important tool to know in the realm of machine learning classification methods. However, it is one thing to understand the theory behind LDA through equations and formulas, and another to gain a practical understanding through hands-on exploration. The interactive tool presented here offers a unique opportunity to experiment and understand LDA in a more intuitive way.</p>
+
+      <p>Which other statistical methods would you like to see interactively visualised? Let me know!</p>
+
+      <hr>
+
+      <p class="muted">All images, unless otherwise noted, were created by the author using Observable. The interactive plot is also available on <a href="https://observablehq.com/@frederikho/interactive-lda-plot">Observable</a> and may be used under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>
+
+      <p class="muted">If you want to read up on LDA, have a look into the great book “An Introduction to Statistical Learning” by James, Witten, Hastie and Tibshirani, which you can download for free on their website: <a href="https://www.statlearning.com/">statlearning.com</a>.</p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">© 2026 Frederik Holtel · <a href="/impressum/">Impressum</a> · <a href="/datenschutz/">Datenschutz</a></div>
+  </footer>
+  <script src="/assets/js/lda-plot.js" defer></script>
+  <script data-goatcounter="https://frederikholtel.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
